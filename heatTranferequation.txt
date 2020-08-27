@@ -1,0 +1,19 @@
+Conduction:
+
+Heat transferred by the process of conduction can be expressed by the following equation,
+
+Q=(kA(THot−TCold)*t)/d
+
+Q = Heat transferred
+
+K = Thermal conductivity
+
+THOT = Hot temperature
+
+TCOLD = Cold Temperature
+
+t = Time
+
+A = Area of the surface
+
+d = Thickness of the material
