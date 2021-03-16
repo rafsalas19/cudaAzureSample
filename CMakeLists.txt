@@ -48,7 +48,7 @@ set_property(TARGET HeatTransfer PROPERTY CUDA_ARCHITECTURES 60 61 62 70)
 
 #include_directories(${HT_INC_DIR} ${CONDUCTION_INC_DIR})
 include_directories(${HT_INC_DIR})
-target_link_libraries(HeatTransfer Conduction)
+target_link_libraries(HeatTransfer)
 
 install(TARGETS HeatTransfer 
         LIBRARY DESTINATION lib
