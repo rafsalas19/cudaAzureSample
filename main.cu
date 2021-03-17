@@ -10,9 +10,9 @@
 
 using namespace std;
 
-#define ITERATION 2
-#define LENX 10
-#define LENY 10 
+#define ITERATION 500
+#define LENX 100
+#define LENY 100
 
 void checkError(cudaError err) {
 	if (err != cudaSuccess)
@@ -36,8 +36,7 @@ transferHeat(const float* inGrid, float* outGrid)
 	if (i > LENX && i <(LENX * LENY -1)-LENX)
 	{		
 		outGrid[i] = .25 * (inGrid[i-1] + inGrid[i+1] + inGrid[i + LENY] + inGrid[i - LENY]);
-		//30,30,30, 75
-		if(i==29)printf("%f | %f %f %f %f\n",outGrid[i], inGrid[i - 1], inGrid[i + 1], inGrid[i + LENY], inGrid[i - LENY]);
+		//if(i==29)printf("%f | %f %f %f %f\n",outGrid[i], inGrid[i - 1], inGrid[i + 1], inGrid[i + LENY], inGrid[i - LENY]);
 	}
 	else
 	{
@@ -93,18 +92,18 @@ int main(){
 	default_initialize(gridPointsCPU,LENX,LENY);
 
 	//copy from cpu
-	err = cudaMemcpy(gridPointsInGPU, gridPointsCPU, probSize, cudaMemcpyHostToDevice);
+	err = cudaMemcpy(gridPointsInGPU, gridPointsCPU, probSize*sizeof(float), cudaMemcpyHostToDevice);
 	checkError(err);
 
-	fstream fstartBuffer;
-	fstartBuffer.open("htStart", fstream::out | fstream::trunc);
-	for (int i = 0; i < probSize; ++i) {
-		//fstartBuffer << gridPointsCPU[i] << endl;
-		int x = i % LENX;
-		int y = i / LENY;
-		fstartBuffer << "index: " << i << " point:" << x << "," << y << " " << gridPointsCPU[i] << endl;
-	}
-	fstartBuffer.close();
+	//fstream fstartBuffer;
+	//fstartBuffer.open("htStart", fstream::out | fstream::trunc);
+	//for (int i = 0; i < probSize; ++i) {
+	//	//fstartBuffer << gridPointsCPU[i] << endl;
+	//	int x = i % LENX;
+	//	int y = i / LENY;
+	//	fstartBuffer << "index: " << i << " point:" << x << "," << y << " " << gridPointsCPU[i] << endl;
+	//}
+	//fstartBuffer.close();
 
 
 	int gridSize = 0;
@@ -115,22 +114,9 @@ int main(){
 
 
 		transferHeat << < gridSize, blockSize >> > (gridPointsInGPU, gridPointsOutGPU);
-		err = cudaDeviceSynchronize();
+		cudaDeviceSynchronize();
 
-
-		//err = cudaMemcpy(gridPointsCPU, gridPointsOutGPU, probSize, cudaMemcpyDeviceToHost);
-		//checkError(err);
-		//fstream fouti;
-		//fouti.open("htlocalout_" + to_string(i), fstream::out | fstream::trunc);
-		//for (int i = 0; i < probSize; ++i) {
-		//	int x = i % LENX;
-		//	int y = i / LENY;
-		//	fouti << "index: " << i << " point:" << x << "," << y << " " << gridPointsCPU[i] << endl;
-		//}
-		//fouti.close();
-
-
-		if (i < ITERATION - 1) {
+		if (i <( ITERATION - 1)) {
 			float* swap = gridPointsInGPU;
 			gridPointsInGPU = gridPointsOutGPU;
 			gridPointsOutGPU = swap;
@@ -139,9 +125,7 @@ int main(){
 	
 	err = cudaGetLastError();
 	checkError(err);
-	err = cudaDeviceSynchronize();
-	checkError(err);
-	err = cudaMemcpy(gridPointsCPU, gridPointsInGPU, probSize, cudaMemcpyDeviceToHost);
+	err = cudaMemcpy(gridPointsCPU, gridPointsOutGPU, probSize * sizeof(float), cudaMemcpyDeviceToHost);
 	checkError(err);
 
 	fstream fout;
@@ -149,7 +133,7 @@ int main(){
 	for (int i = 0;i<probSize;++i) {
 		int x = i % LENX;
 		int y = i / LENY;
-		fout <<"index: "<< i <<" point:" <<x <<","<<y<<" "<<gridPointsCPU[i] << endl;
+		fout  << x <<","<<y<<" "<<gridPointsCPU[i] << endl;
 	}
 	fout.close();
 	char endChar = 'c';
