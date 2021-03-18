@@ -39,6 +39,7 @@ set(HT_SOURCES
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+SET(CUDA_NVCC_FLAGS "-G -pg -lineinfo")
 
 add_executable(HeatTransfer ${HT_SOURCES} ${HT_INCLUDES})
 

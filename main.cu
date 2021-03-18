@@ -136,9 +136,9 @@ int main(){
 		fout  << x <<","<<y<<" "<<gridPointsCPU[i] << endl;
 	}
 	fout.close();
-	char endChar = 'c';
-	cout << "enter a character to exit"<<endl;
-	cin >> endChar;
+//	char endChar = 'c';
+//	cout << "enter a character to exit"<<endl;
+//	cin >> endChar;
 
 	return 0;
 }
